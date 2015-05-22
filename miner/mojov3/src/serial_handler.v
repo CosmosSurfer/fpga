@@ -28,6 +28,7 @@ module serial_handler(
     input new_rx_data,
 	 output reg new_work,
 	 output reg [639:0] work_data,
+	 input got_work,
 	 input new_result,
     input [31:0] result_data
     );
@@ -177,10 +178,13 @@ module serial_handler(
 	 end
 
 	 /**
-	  * Set that we do not have new work. This should
-	  * be moved to a better location.
+	  * If the work was picked up then set that there
+	  * is no new work.
 	  */
-	 new_work = 1'b0;
+	 if (got_work)
+	 begin
+		new_work = 1'b0;
+	 end
 
     case (state_d)
       STATE_READ:

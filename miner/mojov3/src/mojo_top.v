@@ -62,6 +62,11 @@ module mojo_top(
 	wire [639:0] work_data;
 	
 	/**
+	 * If true we got the work from the work_data.
+	 */
+	wire got_work;
+	
+	/**
 	 * If set we have a new result.
 	 */
 	wire new_result;
@@ -104,6 +109,7 @@ module mojo_top(
 	 .new_rx_data(new_rx_data),
 	 .new_work(new_work),
 	 .work_data(work_data),
+	 .got_work(got_work),
 	 .new_result(new_result),
 	 .result_data(result_data)
 	);
@@ -121,6 +127,7 @@ module mojo_top(
 		.rst(rst),
 		.new_work(new_work),
 		.work_data(work_data),
+		.got_work(got_work),
 		.new_result(new_result),
 		.result_data(result_data)
 	);
