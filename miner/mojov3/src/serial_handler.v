@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2013-2015 John Connor (BM-NC49AxAjcqVcF5jNPu85Rb8MJ2d9JqZt)
- *
- * This is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License with
- * additional permissions to the one published by the Free Software
- * Foundation, either version 3 of the License, or (at your option)
- * any later version. For more information see LICENSE.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 
 `timescale 1ns / 1ps
 
@@ -26,8 +9,14 @@ module serial_handler(
     input tx_busy,
     input [7:0] rx_data,
     input new_rx_data,
+	 output reg work_restart,
 	 output reg new_work,
+	 output reg new_work_92,
 	 output reg [639:0] work_data,
+	 output reg [511:0] work_midstate_64,
+	 output reg [159:0] work_data_20,
+	 output reg [31:0] work_target_d,
+	 output reg [31:0] nonce_end_d,
 	 input got_work,
 	 input new_result,
     input [31:0] result_data
@@ -56,12 +45,12 @@ module serial_handler(
 		MESSAGE_TYPE_NONE = 0,
 		MESSAGE_TYPE_ACK = 2,
 		MESSAGE_TYPE_NACK = 4,
-		MESSAGE_TYPE_PING = 8,
-		MESSAGE_TYPE_INFO = 18,
-		MESSAGE_TYPE_NEW_WORK = 19,
-		MESSAGE_TYPE_RESTART = 20,
-		MESSAGE_TYPE_TEST_WORK = 21,
-		MESSAGE_TYPE_RESULT = 32,
+		MESSAGE_TYPE_PING = 9,
+		MESSAGE_TYPE_INFO = 21,
+		MESSAGE_TYPE_NEW_WORK = 23,
+		MESSAGE_TYPE_TEST_WORK = 25,
+		MESSAGE_TYPE_RESTART = 27,
+		MESSAGE_TYPE_RESULT = 48,
 		MESSAGE_TYPE_ERROR = 254
   ;
 
@@ -124,7 +113,9 @@ module serial_handler(
 	length_read_d = 0;
 	offset_write_d = 0;
 	length_write_d = 0;
+	work_restart = 1'b0;
 	new_work = 1'b0;
+	new_work_92 = 1'b0;
 	result_data_copy_send = 1'b0;
   end
   
@@ -136,7 +127,9 @@ module serial_handler(
 		length_read_d = 0;
 		offset_write_d = 0;
 		length_write_d = 0;
+		work_restart = 1'b0;
 	   new_work = 1'b0;
+		new_work_92 = 1'b0;
 	   result_data_copy_send = 1'b0;
 	 end
 	 
@@ -152,13 +145,14 @@ module serial_handler(
 		 */
 		for (integer i = 0; i < 4 * 8; i = i + 1)
 			result_data_copy[i] = result_data[i];
-
+		
 		/**
 		 * Set that we need to send the copy of the result
 		 * data.
 		 */
 		result_data_copy_send = 1'b1;
 	 end
+	 else
 	 
 	 if (
 		result_data_copy_send && state_d == STATE_READ &&
@@ -184,7 +178,10 @@ module serial_handler(
 	 if (got_work)
 	 begin
 		new_work = 1'b0;
+		new_work_92 = 1'b0;
 	 end
+	 
+	 work_restart = 1'b0;
 
     case (state_d)
       STATE_READ:
@@ -267,15 +264,17 @@ module serial_handler(
 		end
 		STATE_RESTART:
 		begin
+		
 			/**
-			 * Set that we have new work.
+			 * Set that we need to restart our work.
 			 */
-			new_work = 1'b1;
+			work_restart = 1'b1;
 
 		  /**
 			* Send ACK.
 			*/
 			state_d = STATE_SEND_ACK;
+			
 		end
 		STATE_SEND_RESULT_DATA_COPY:
 		begin
@@ -497,6 +496,216 @@ module serial_handler(
 							*/
 							state_d = STATE_SEND_ACK;
 						end
+						else if (data_rx_d[1] == 92)
+						begin
+
+							/**
+							 * The work_handler will start to process the
+							 * 92 bytes of work from a copy of data_rx_d.
+							 */
+
+							/**
+							 * Copy midstate to work_midstate_64.
+							 */
+							 
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[7:0] = data_rx_d[2 + 0];
+							work_midstate_64[15:8] = data_rx_d[2 + 1];
+							work_midstate_64[23:16] = data_rx_d[2 + 2];
+							work_midstate_64[31:24] = data_rx_d[2 + 3];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[39:32] = data_rx_d[2 + 4];
+							work_midstate_64[47:40] = data_rx_d[2 + 5];
+							work_midstate_64[55:48] = data_rx_d[2 + 6];
+							work_midstate_64[63:56] = data_rx_d[2 + 7];
+
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[71:64] = data_rx_d[2 + 8];
+							work_midstate_64[79:72] = data_rx_d[2 + 9];
+							work_midstate_64[87:80] = data_rx_d[2 + 10];
+							work_midstate_64[95:88] = data_rx_d[2 + 11];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[103:96] = data_rx_d[2 + 12];
+							work_midstate_64[111:104] = data_rx_d[2 + 13];
+							work_midstate_64[119:112] = data_rx_d[2 + 14];
+							work_midstate_64[127:120] = data_rx_d[2 + 15];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[135:128] = data_rx_d[2 + 16];
+							work_midstate_64[143:136] = data_rx_d[2 + 17];
+							work_midstate_64[151:144] = data_rx_d[2 + 18];
+							work_midstate_64[159:152] = data_rx_d[2 + 19];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[167:160] = data_rx_d[2 + 20];
+							work_midstate_64[175:168] = data_rx_d[2 + 21];
+							work_midstate_64[183:176] = data_rx_d[2 + 22];
+							work_midstate_64[191:184] = data_rx_d[2 + 23];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[199:192] = data_rx_d[2 + 24];
+							work_midstate_64[207:200] = data_rx_d[2 + 25];
+							work_midstate_64[215:208] = data_rx_d[2 + 26];
+							work_midstate_64[223:216] = data_rx_d[2 + 27];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[231:224] = data_rx_d[2 + 28];
+							work_midstate_64[239:232] = data_rx_d[2 + 29];
+							work_midstate_64[247:240] = data_rx_d[2 + 30];
+							work_midstate_64[255:248] = data_rx_d[2 + 31];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[263:256] = data_rx_d[2 + 32];
+							work_midstate_64[271:264] = data_rx_d[2 + 33];
+							work_midstate_64[279:272] = data_rx_d[2 + 34];
+							work_midstate_64[287:280] = data_rx_d[2 + 35];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[295:288] = data_rx_d[2 + 36];
+							work_midstate_64[303:296] = data_rx_d[2 + 37];
+							work_midstate_64[311:304] = data_rx_d[2 + 38];
+							work_midstate_64[319:312] = data_rx_d[2 + 39];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[327:320] = data_rx_d[2 + 40];
+							work_midstate_64[335:328] = data_rx_d[2 + 41];
+							work_midstate_64[343:336] = data_rx_d[2 + 42];
+							work_midstate_64[351:344] = data_rx_d[2 + 43];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[359:352] = data_rx_d[2 + 44];
+							work_midstate_64[367:360] = data_rx_d[2 + 45];
+							work_midstate_64[375:368] = data_rx_d[2 + 46];
+							work_midstate_64[383:376] = data_rx_d[2 + 47];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[391:384] = data_rx_d[2 + 48];
+							work_midstate_64[399:392] = data_rx_d[2 + 49];
+							work_midstate_64[407:400] = data_rx_d[2 + 50];
+							work_midstate_64[415:408] = data_rx_d[2 + 51];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[423:416] = data_rx_d[2 + 52];
+							work_midstate_64[431:424] = data_rx_d[2 + 53];
+							work_midstate_64[439:432] = data_rx_d[2 + 54];
+							work_midstate_64[447:440] = data_rx_d[2 + 55];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[455:448] = data_rx_d[2 + 56];
+							work_midstate_64[463:456] = data_rx_d[2 + 57];
+							work_midstate_64[471:464] = data_rx_d[2 + 58];
+							work_midstate_64[479:472] = data_rx_d[2 + 59];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_midstate_64[487:480] = data_rx_d[2 + 60];
+							work_midstate_64[495:488] = data_rx_d[2 + 61];
+							work_midstate_64[503:496] = data_rx_d[2 + 62];
+							work_midstate_64[511:504] = data_rx_d[2 + 63];
+
+							/**
+							 * Copy 20 bytes of work to work_data_20.
+							 */
+						 
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_data_20[7:0] = data_rx_d[2 + 64];
+							work_data_20[15:8] = data_rx_d[2 + 65];
+							work_data_20[23:16] = data_rx_d[2 + 66];
+							work_data_20[31:24] = data_rx_d[2 + 67];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_data_20[39:32] = data_rx_d[2 + 68];
+							work_data_20[47:40] = data_rx_d[2 + 69];
+							work_data_20[55:48] = data_rx_d[2 + 70];
+							work_data_20[63:56] = data_rx_d[2 + 71];
+
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_data_20[71:64] = data_rx_d[2 + 72];
+							work_data_20[79:72] = data_rx_d[2 + 73];
+							work_data_20[87:80] = data_rx_d[2 + 74];
+							work_data_20[95:88] = data_rx_d[2 + 75];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_data_20[103:96] = data_rx_d[2 + 76];
+							work_data_20[111:104] = data_rx_d[2 + 77];
+							work_data_20[119:112] = data_rx_d[2 + 78];
+							work_data_20[127:120] = data_rx_d[2 + 79];
+							
+							/**
+							 * Copy 32-bits of the work.
+							 */
+							work_data_20[135:128] = data_rx_d[2 + 80];
+							work_data_20[143:136] = data_rx_d[2 + 81];
+							work_data_20[151:144] = data_rx_d[2 + 82];
+							work_data_20[159:152] = data_rx_d[2 + 83];
+							
+							/**
+							 * Copy 32-bit target to work_target_d.
+							 */
+							work_target_d[7:0] = data_rx_d[2 + 84];
+							work_target_d[15:8] = data_rx_d[2 + 85];
+							work_target_d[23:16] = data_rx_d[2 + 86];
+							work_target_d[31:24] = data_rx_d[2 + 87];
+							
+							/**
+							 * Copy 32-bit target to nonce_end_d.
+							 */
+							nonce_end_d[7:0] = data_rx_d[2 + 91];
+							nonce_end_d[15:8] = data_rx_d[2 + 95];
+							nonce_end_d[23:16] = data_rx_d[2 + 99];
+							nonce_end_d[31:24] = data_rx_d[2 + 103];
+							
+							/**
+							 * Set that we have new work (92 bytes).
+							 */
+							new_work_92 = 1'b1;
+						
+						  /**
+							* Send ACK.
+							*/
+							state_d = STATE_SEND_ACK;
+						end
 						else
 						begin
 							/**
@@ -712,11 +921,245 @@ module serial_handler(
 								state_d = STATE_SEND_NACK;
 							end
 						end
+						else if (data_rx_d[1] == 92)
+						begin
+						
+							/**
+							 * The work_handler will start to process the
+							 * 92 bytes of work from a copy of data_rx_d.
+							 */
+							 
+							/**
+							 * Check the 20 bytes of work.
+							 */
+							if (
+								data_rx_d[2 + 64] == 207 && data_rx_d[2 + 65] == 203 &&
+								data_rx_d[2 + 66] == 255 && data_rx_d[2 + 67] == 204 &&
+								data_rx_d[2 + 68] == 230 && data_rx_d[2 + 69] == 220 &&
+								data_rx_d[2 + 70] == 34 && data_rx_d[2 + 71] == 253 &&
+								data_rx_d[2 + 72] == 84 && data_rx_d[2 + 73] == 152 &&
+								data_rx_d[2 + 74] == 246 && data_rx_d[2 + 75] == 208 &&
+								data_rx_d[2 + 76] == 30 && data_rx_d[2 + 77] == 15 &&
+								data_rx_d[2 + 78] == 255 && data_rx_d[2 + 79] == 255 &&
+								data_rx_d[2 + 80] == 84 && data_rx_d[2 + 81] == 152 &&
+								data_rx_d[2 + 82] == 207 && data_rx_d[2 + 83] == 192
+							)
+							begin
+								/**
+								 * Copy midstate to work_midstate_64.
+								 */
+								 
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[7:0] = data_rx_d[2 + 0];
+								work_midstate_64[15:8] = data_rx_d[2 + 1];
+								work_midstate_64[23:16] = data_rx_d[2 + 2];
+								work_midstate_64[31:24] = data_rx_d[2 + 3];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[39:32] = data_rx_d[2 + 4];
+								work_midstate_64[47:40] = data_rx_d[2 + 5];
+								work_midstate_64[55:48] = data_rx_d[2 + 6];
+								work_midstate_64[63:56] = data_rx_d[2 + 7];
+
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[71:64] = data_rx_d[2 + 8];
+								work_midstate_64[79:72] = data_rx_d[2 + 9];
+								work_midstate_64[87:80] = data_rx_d[2 + 10];
+								work_midstate_64[95:88] = data_rx_d[2 + 11];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[103:96] = data_rx_d[2 + 12];
+								work_midstate_64[111:104] = data_rx_d[2 + 13];
+								work_midstate_64[119:112] = data_rx_d[2 + 14];
+								work_midstate_64[127:120] = data_rx_d[2 + 15];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[135:128] = data_rx_d[2 + 16];
+								work_midstate_64[143:136] = data_rx_d[2 + 17];
+								work_midstate_64[151:144] = data_rx_d[2 + 18];
+								work_midstate_64[159:152] = data_rx_d[2 + 19];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[167:160] = data_rx_d[2 + 20];
+								work_midstate_64[175:168] = data_rx_d[2 + 21];
+								work_midstate_64[183:176] = data_rx_d[2 + 22];
+								work_midstate_64[191:184] = data_rx_d[2 + 23];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[199:192] = data_rx_d[2 + 24];
+								work_midstate_64[207:200] = data_rx_d[2 + 25];
+								work_midstate_64[215:208] = data_rx_d[2 + 26];
+								work_midstate_64[223:216] = data_rx_d[2 + 27];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[231:224] = data_rx_d[2 + 28];
+								work_midstate_64[239:232] = data_rx_d[2 + 29];
+								work_midstate_64[247:240] = data_rx_d[2 + 30];
+								work_midstate_64[255:248] = data_rx_d[2 + 31];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[263:256] = data_rx_d[2 + 32];
+								work_midstate_64[271:264] = data_rx_d[2 + 33];
+								work_midstate_64[279:272] = data_rx_d[2 + 34];
+								work_midstate_64[287:280] = data_rx_d[2 + 35];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[295:288] = data_rx_d[2 + 36];
+								work_midstate_64[303:296] = data_rx_d[2 + 37];
+								work_midstate_64[311:304] = data_rx_d[2 + 38];
+								work_midstate_64[319:312] = data_rx_d[2 + 39];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[327:320] = data_rx_d[2 + 40];
+								work_midstate_64[335:328] = data_rx_d[2 + 41];
+								work_midstate_64[343:336] = data_rx_d[2 + 42];
+								work_midstate_64[351:344] = data_rx_d[2 + 43];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[359:352] = data_rx_d[2 + 44];
+								work_midstate_64[367:360] = data_rx_d[2 + 45];
+								work_midstate_64[375:368] = data_rx_d[2 + 46];
+								work_midstate_64[383:376] = data_rx_d[2 + 47];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[391:384] = data_rx_d[2 + 48];
+								work_midstate_64[399:392] = data_rx_d[2 + 49];
+								work_midstate_64[407:400] = data_rx_d[2 + 50];
+								work_midstate_64[415:408] = data_rx_d[2 + 51];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[423:416] = data_rx_d[2 + 52];
+								work_midstate_64[431:424] = data_rx_d[2 + 53];
+								work_midstate_64[439:432] = data_rx_d[2 + 54];
+								work_midstate_64[447:440] = data_rx_d[2 + 55];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[455:448] = data_rx_d[2 + 56];
+								work_midstate_64[463:456] = data_rx_d[2 + 57];
+								work_midstate_64[471:464] = data_rx_d[2 + 58];
+								work_midstate_64[479:472] = data_rx_d[2 + 59];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_midstate_64[487:480] = data_rx_d[2 + 60];
+								work_midstate_64[495:488] = data_rx_d[2 + 61];
+								work_midstate_64[503:496] = data_rx_d[2 + 62];
+								work_midstate_64[511:504] = data_rx_d[2 + 63];
+								
+								/**
+								 * Copy 20 bytes of work to work_data_20.
+								 */
+							 
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_data_20[7:0] = data_rx_d[2 + 64];
+								work_data_20[15:8] = data_rx_d[2 + 65];
+								work_data_20[23:16] = data_rx_d[2 + 66];
+								work_data_20[31:24] = data_rx_d[2 + 67];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_data_20[39:32] = data_rx_d[2 + 68];
+								work_data_20[47:40] = data_rx_d[2 + 69];
+								work_data_20[55:48] = data_rx_d[2 + 70];
+								work_data_20[63:56] = data_rx_d[2 + 71];
+
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_data_20[71:64] = data_rx_d[2 + 72];
+								work_data_20[79:72] = data_rx_d[2 + 73];
+								work_data_20[87:80] = data_rx_d[2 + 74];
+								work_data_20[95:88] = data_rx_d[2 + 75];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_data_20[103:96] = data_rx_d[2 + 76];
+								work_data_20[111:104] = data_rx_d[2 + 77];
+								work_data_20[119:112] = data_rx_d[2 + 78];
+								work_data_20[127:120] = data_rx_d[2 + 79];
+								
+								/**
+								 * Copy 32-bits of the work.
+								 */
+								work_data_20[135:128] = data_rx_d[2 + 80];
+								work_data_20[143:136] = data_rx_d[2 + 81];
+								work_data_20[151:144] = data_rx_d[2 + 82];
+								work_data_20[159:152] = data_rx_d[2 + 83];
+								
+								/**
+								 * Copy 32-bit target to work_target_d.
+								 */
+								work_target_d[7:0] = data_rx_d[2 + 84];
+								work_target_d[15:8] = data_rx_d[2 + 85];
+								work_target_d[23:16] = data_rx_d[2 + 86];
+								work_target_d[31:24] = data_rx_d[2 + 87];
+								
+								/**
+								 * Copy 32-bit target to nonce_end_d.
+								 */
+								nonce_end_d[7:0] = data_rx_d[2 + 91];
+								nonce_end_d[15:8] = data_rx_d[2 + 95];
+								nonce_end_d[23:16] = data_rx_d[2 + 99];
+								nonce_end_d[31:24] = data_rx_d[2 + 103];
+								
+								/**
+								 * Set that we have new work (92 bytes).
+								 */
+								new_work_92 = 1'b1;
+							
+							  /**
+								* Send ACK.
+								*/
+								state_d = STATE_SEND_ACK;
+							end
+							else
+							begin
+							  /**
+								* Send NACK.
+								*/
+								state_d = STATE_SEND_NACK;
+							end
+						end
 						else
 						begin
 							/**
-							 * We got an unsupported work length, send the
-							 * length as the message type.
+							 * We got an unsupported work length, send
+							 * error.
 							 */
 							state_d = STATE_SEND_ERROR;
 						end
