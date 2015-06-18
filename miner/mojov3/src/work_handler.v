@@ -18,124 +18,84 @@
 
 `timescale 1ns / 1ps
 
-module work_handler(
-    input clk,
-    input rst,
-	 input work_restart,
-	 input new_work,
-	 input new_work_92,
-	 input [639:0] work_data,
-	 input [511:0] work_midstate_64,
-	 input [159:0] work_data_20,
-	 input [31:0] work_target_d,
-	 output reg got_work,
-	 output reg new_result,
-	 output reg [31:0] result_data
-    );
+module work_handler (
+	input clk,
+	input new_work,
+	input [511:0] midstate,
+	input [95:0] header,
+	input [31:0] nonce_start,
+	input [31:0] nonce_end,
+	input [31:0] target,
+	output hashing,
+	output new_result,
+	output [31:0] result_data
+);
 
-integer loop_d;
-integer nonce_d;
-	
-initial
-begin
-	got_work = 1'b0;
-	new_result = 1'b0;
-	loop_d = 0;
-	nonce_d = 0;
-end
+	wire [511:0] block;
+	wire [511:0] hash;
+	wire hash_ready;
 
-always @(posedge clk)
-begin
+	reg [31:0] hash_xor;
+	reg [31:0] nonce, result;
+	reg rst, hash_enabled, new_res;
 
-	if (rst)
-	begin
-		got_work <= 1'b0;
-		new_result <= 1'b0;
-		loop_d <= 0;
-		nonce_d <= 0;
+	initial begin
+		hash_enabled = 1'b0;
+		result = 32'd0;
+		new_res = 1'b0;
+		rst = 1'b0;
 	end
 
-	/**
-	 * :TODO: This may need synchronisation, use a
-	 * got_new_result perhaps.
-	 */
-	new_result <= 1'b0;
-	 
-	/**
-	 * Restart using the existing work.
-	 */
-	if (work_restart)
-	begin
-		got_work <= 1'b0;
-		new_result <= 1'b0;
-		loop_d <= 0;
-		nonce_d <= 0;
-	end
-	 
-	if (new_work)
-	begin
-		
-		/**
-		 * Echo back the nonce portion of the work for
-		 * testing serial roundtrip.
-		 */
-		nonce_d <= work_data[639:608];
-		
-		// :TODO: hash
-		
-		/**
-		 * Set that we got the work.
-		 */
-		got_work <= 1'b1;
-		
-		/**
-		 * Set the result.
-		 */
-		result_data <= nonce_d;
-		
-		loop_d <= 1;
-	end
-	else if (new_work_92)
-	begin
-	
-		/**
-		 * Echo back the nonce portion of the work for
-		 * testing serial roundtrip.
-		 */
-		nonce_d <= work_data_20[159:128];
-		
-		// :TODO: hash
-		
-		/**
-		 * Set that we got the work.
-		 */
-		got_work <= 1'b1;
-		
-		/**
-		 * Set the result.
-		 */
-		result_data <= nonce_d;
-		
-		loop_d <= 1;
-	end
-	else
-	begin
-		got_work <= 1'b0;
-	end
-	
-	/**
-	 * Fake some work.
-	 */
-	if (loop_d > 1000000)
-	begin
-		loop_d <= 0;
-		new_result <= 1'b1;
-	end
-	else if (loop_d > 0)
-	begin
-		loop_d <= loop_d + 1;
-	end
+	assign block = {header, nonce, 8'h80, 360'd0, 16'h0280};;	// Add Nonce To Supplied Header
 
-end
+	whirlpool whirlpool ( clk, rst, block, midstate, hash_ready, hash );
+
+	assign result_data = result;
+	assign new_result = new_res;
+	assign hashing = hash_enabled;
+
+	always @(posedge clk) begin
+
+		new_res = 1'b0;
+		result = 32'h00000000;
+		rst = new_work;
+		
+		// When New Work Arrives, Reset All Values
+		if (new_work) begin
+			nonce = nonce_start;
+			hash_enabled = 1'b1;
+			new_res = 1'b0;
+		end 
+		else if (hash_enabled) begin
+		
+			if (hash_ready) begin							// Because Multiple Cycles Are Used, Wait For Hash To Complete
+			
+				// XOR The Whirlpool Hash To Itself Offset By 128 Bits (Only 32 Bits Required For Target Check)
+				hash_xor = {hash[263:256] ^ hash[135:128],
+								hash[271:264] ^ hash[143:136],
+								hash[279:272] ^ hash[151:144],
+								hash[287:280] ^ hash[159:152]};
+
+//				$display("\n\tHash:  %x\n\tHashx: %x\n", hash, hash_xor);
+
+				if (hash_xor <= target) begin				// Check If A Nonce Was Found On Prior Hash
+					new_res = 1'b1;
+					result = nonce;
+				end
+
+				else if (nonce == nonce_end) begin		// Check If All Nonces Have Been Used
+					hash_enabled = 1'b0;
+					new_res = 1'b1;
+					result = nonce;
+				end
+
+				nonce = nonce + 1'b1;
+
+			end
+		end
+
+//		$display ("Nonce: %d, Ready: %d, State: %x, Block: %x, New Work: %d, Enabled: %d, Hashing: %d, New Result: %d, Result: %d", nonce, hash_ready, midstate[511:480], block[159:128], new_work, hash_enabled, hashing, new_res, result);
+
+	end
 
 endmodule

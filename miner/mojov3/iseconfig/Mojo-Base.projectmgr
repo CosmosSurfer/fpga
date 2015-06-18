@@ -7,18 +7,66 @@
    <ItemView engineview="SynthesisOnly" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
          <ClosedNodesVersion>2</ClosedNodesVersion>
+         <ClosedNode>/avr_interface C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing2|src|avr_interface.v</ClosedNode>
+         <ClosedNode>/avr_interface C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|avr_interface.v</ClosedNode>
          <ClosedNode>/avr_interface |home|justin|workspace|Mojo-Tutorials|Mojo-Base|src|avr_interface.v</ClosedNode>
+         <ClosedNode>/fpga_miner C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing2|src|fpga_miner_top.v/work_handler - work_handler</ClosedNode>
+         <ClosedNode>/hash - beh C:|Users|freedom|Development|fpga|miner|mojov3|src|hash.vhd</ClosedNode>
+         <ClosedNode>/hash_fi - beh C:|Users|freedom|Development|fpga|miner|mojov3|src|hash_fi.vhd</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing2|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/round - process_round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|mojo_top.v/avr_interface - avr_interface</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|mojo_top.v/work_handler - work_handler</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool</ClosedNode>
          <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/avr_interface - avr_interface</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r1 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r2 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r3 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r4 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r5 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r6 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r7 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r8 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/whirlpool - whirlpool/r9 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/R - process_round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r0 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r1 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r2 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r3 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r4 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r5 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r6 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r7 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r8 - round</ClosedNode>
+         <ClosedNode>/mojo_top C:|Users|freedom|Development|fpga|miner|mojov3|src|mojo_top.v/work_handler - work_handler/whirlpool - whirlpool/r9 - round</ClosedNode>
+         <ClosedNode>/mojo_top E:|FPGA|mojov3|mojov3-with-hashing2|src|mojo_top.v/avr_interface - avr_interface</ClosedNode>
+         <ClosedNode>/mojo_top E:|FPGA|mojov3|mojov3-with-hashing2|src|mojo_top.v/work_handler - work_handler</ClosedNode>
+         <ClosedNode>/process_round C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|process_round.v</ClosedNode>
+         <ClosedNode>/sbox_fi - beh C:|Users|freedom|Development|fpga|miner|mojov3|src|sbox_fi.vhd</ClosedNode>
+         <ClosedNode>/theta_fi - beh C:|Users|freedom|Development|fpga|miner|mojov3|src|theta_fi.vhd</ClosedNode>
          <ClosedNode>/whirlpool - beh C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.vhd</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r0 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r1 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r2 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r3 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r4 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r5 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r6 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r7 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r8 - round</ClosedNode>
+         <ClosedNode>/whirlpool C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool.v/r9 - round</ClosedNode>
+         <ClosedNode>/whirlpool2 C:|Users|freedom|Development|fpga|miner|mojov3|src|whirlpool2.v</ClosedNode>
+         <ClosedNode>/work_handler C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing2|src|work_handler.v</ClosedNode>
+         <ClosedNode>/work_handler C:|Users|freedom|Development|fpga|miner|mojov3-with-hashing|src|work_handler.v</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>mojo_top (C:/Users/freedom/Development/fpga/miner/mojov3/src/mojo_top.v)</SelectedItem>
+         <SelectedItem>mojo.ucf (E:/FPGA/mojov3/mojov3-with-hashing2/src/mojo.ucf)</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000002020000000100000001000000640000014e000000020000000000000000000000000200000064ffffffff0000008100000003000000020000014e0000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>mojo_top (C:/Users/freedom/Development/fpga/miner/mojov3/src/mojo_top.v)</CurrentItem>
+      <CurrentItem>mojo.ucf (E:/FPGA/mojov3/mojov3-with-hashing2/src/mojo.ucf)</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VERILOG" guiview="Process" >
       <ClosedNodes>
@@ -27,18 +75,20 @@
          <ClosedNode>Design Utilities</ClosedNode>
          <ClosedNode>Implement Design/Map</ClosedNode>
          <ClosedNode>Implement Design/Place &amp; Route</ClosedNode>
+         <ClosedNode>Implement Design/Place &amp; Route/Generate IBIS Model</ClosedNode>
+         <ClosedNode>Implement Design/Place &amp; Route/Generate Post-Place &amp; Route Static Timing</ClosedNode>
          <ClosedNode>Implement Design/Translate</ClosedNode>
          <ClosedNode>Synthesize - XST</ClosedNode>
          <ClosedNode>User Constraints</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>Generate Programming File</SelectedItem>
+         <SelectedItem></SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000199000000010000000100000000000000000000000064ffffffff000000810000000000000001000001990000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000150000000010000000100000000000000000000000064ffffffff000000810000000000000001000001500000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>Generate Programming File</CurrentItem>
+      <CurrentItem></CurrentItem>
    </ItemView>
    <ItemView guiview="File" >
       <ClosedNodes>
@@ -49,7 +99,7 @@
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000000000000000100000000000000000000000000000000000003a3000000040101000100000000000000000000000064ffffffff000000810000000000000004000000770000000100000000000000c50000000100000000000000790000000100000000000001ee0000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>avr_interface.v</CurrentItem>
+      <CurrentItem>cclk_detector.v</CurrentItem>
    </ItemView>
    <ItemView guiview="Library" >
       <ClosedNodes>
@@ -68,30 +118,29 @@
    <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
       <ClosedNodes>
          <ClosedNodesVersion>1</ClosedNodesVersion>
-         <ClosedNode>Design Utilities</ClosedNode>
+         <ClosedNode>Design Utilities/Compile HDL Simulation Libraries</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
          <SelectedItem/>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000199000000010000000100000000000000000000000064ffffffff000000810000000000000001000001990000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000150000000010000000100000000000000000000000064ffffffff000000810000000000000001000001500000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem/>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_UCF" guiview="Process" >
       <ClosedNodes>
          <ClosedNodesVersion>1</ClosedNodesVersion>
-         <ClosedNode>User Constraints</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem/>
+         <SelectedItem>Edit Constraints (Text)</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000199000000010000000100000000000000000000000064ffffffff000000810000000000000001000001990000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000150000000010000000100000000000000000000000064ffffffff000000810000000000000001000001500000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem/>
+      <CurrentItem>Edit Constraints (Text)</CurrentItem>
    </ItemView>
    <ItemView engineview="BehavioralSim" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
@@ -145,7 +194,7 @@
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000000f8000000010000000100000000000000000000000064ffffffff000000810000000000000001000000f80000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000199000000010000000100000000000000000000000064ffffffff000000810000000000000001000001990000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem/>
    </ItemView>

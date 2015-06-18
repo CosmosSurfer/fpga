@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2013-2015 John Connor (BM-NC49AxAjcqVcF5jNPu85Rb8MJ2d9JqZt)
- *
- * This is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License with
- * additional permissions to the one published by the Free Software
- * Foundation, either version 3 of the License, or (at your option)
- * any later version. For more information see LICENSE.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 
 module mojo_top(
     // 50MHz clock input
@@ -51,60 +34,16 @@ module mojo_top(
 	wire [7:0] rx_data;
 	wire new_rx_data;
 
-	/**
-	 * If set we need to restart work.
-	 */
-	wire work_restart;
-	
-	/**
-	 * If set we have new work.
-	 */
-   wire new_work;
-	
-	/**
-	 * If set we have new (92 byte) work.
-	 */
-	wire new_work_92;
-	
-	/**
-	 * The (80 byte) work (if new_work is set).
-	 */
-	wire [639:0] work_data;
-	
-	/**
-	 * Thw work midstate (64 byte).
-	 */
-	wire [511:0] work_midstate_64;
-	
-	/**
-	 * The work data (20 byte).
-	 */
-	wire [159:0] work_data_20;
-	
-	/**
-	 * The (4 byte) work target.
-	 */
-	wire [31:0] work_target_d;
-	
-		/**
-	 * The (4 byte) nonce end.
-	 */
-	wire [31:0] nonce_end_d;
-	
-	/**
-	 * If true we got the work from the work_data.
-	 */
-	wire got_work;
-	
-	/**
-	 * If set we have a new result.
-	 */
-	wire new_result;
-	
-	/**
-	 * The (4 byte) result (if new_result is set).
-	 */
-	wire [31:0] result_data;
+	// Wires Used For Miner Work / Results
+	wire new_work;						// Indicates When New Work Has Been Received
+	wire [511:0] midstate;			// Stores The Midstate For The Current Work Item
+	wire [95:0] block_header;		// Stores The Remaining Block Header Data For The Current Work Item
+	wire [31:0] nonce_start;		// Nonce To Use When Hashing First Begins
+	wire [31:0] nonce_end;			// Continue Hashing Until This Nonce Is Reached
+	wire [31:0] target;				// A Valid Nonce Is Found When The Resulting Hash Is Less Than The Target
+	wire new_result;					// Indicates When A Valid Nonce Has Been Found Or Hashing Is Complete
+	wire [31:0] result_data;		// Stores The Nonce That Was Found
+	wire hashing;						// Indicates The FPGA Is Hashing
 
 	avr_interface avr_interface(
 	 .clk(clk),
@@ -128,26 +67,48 @@ module mojo_top(
 	 .rx_data(rx_data),
 	 .new_rx_data(new_rx_data)
 	);
+	/*
+	// Define Serial Interface Settings
+	parameter CLK_RATE = 50000000;
+	parameter SERIAL_BAUD_RATE = 115200;
+	parameter CLK_PER_BIT = $rtoi($ceil(CLK_RATE/SERIAL_BAUD_RATE));
+
+	// Instantiate The Object For Serial Data Receive (Rx)
+	serial_rx #(.CLK_PER_BIT(CLK_PER_BIT)) serial_rx (
+		.clk(clk),
+//		.rst(1'b0),
+		.rx(avr_tx),
+		.data(rx_data),
+		.new_data(new_rx_data)
+	);
+
+	// Instantiate The Object For Serial Data Transmit (Tx)
+	serial_tx #(.CLK_PER_BIT(CLK_PER_BIT)) serial_tx (
+		.clk(clk),
+//		.rst(1'b0),
+		.tx(avr_rx),
+		.busy(tx_busy),
+		.data(tx_data),
+		.new_data(new_tx_data)
+	);
+	*/
  
 	serial_handler serial_handler(
 	 .clk(clk),
-	 .rst(rst),
-	 .tx_data(tx_data),
-	 .new_tx_data(new_tx_data),
-	 .tx_busy(tx_busy),
-	 .rx_data(rx_data),
-	 .new_rx_data(new_rx_data),
-	 .work_restart(work_restart),
-	 .new_work(new_work),
-	 .new_work_92(new_work_92),
-	 .work_data(work_data),
-	 .work_midstate_64(work_midstate_64),
-	 .work_data_20(work_data_20),
-	 .work_target_d(work_target_d),
-	 .nonce_end_d(nonce_end_d),
-	 .got_work(got_work),
-	 .new_result(new_result),
-	 .result_data(result_data)
+	 //.rst(rst),
+		.tx_data(tx_data),
+		.new_tx_data(new_tx_data),
+		.tx_busy(tx_busy),
+		.rx_data(rx_data),
+		.new_rx_data(new_rx_data),
+		.new_work(new_work),
+		.midstate(midstate),
+		.block_header(block_header),
+		.nonce_start(nonce_start),
+		.nonce_end(nonce_end),
+		.target(target),
+		.new_result(new_result),
+		.result_data(result_data)
 	);
 	
 	led_handler led_handler(
@@ -155,33 +116,23 @@ module mojo_top(
 	 .led(led),
 	 .rst(rst),
 	 .new_work(new_work),
-	 .new_work_92(new_work_92),
-	 .new_result(new_result)
+	 .new_work_88(new_work),
+	 .new_result(new_result),
+	 .hashing(hashing)
 	);
 	
 	work_handler work_handler(
 		.clk(clk),
-		.rst(rst),
-		.work_restart(work_restart),
+		//.rst(rst),
 		.new_work(new_work),
-		.new_work_92(new_work_92),
-		.work_data(work_data),
-	   .work_midstate_64(work_midstate_64),
-	   .work_data_20(work_data_20),
-	   .work_target_d(work_target_d),
-		.got_work(got_work),
+		.midstate(midstate),
+		.header(block_header),
+		.nonce_start(nonce_start),
+		.nonce_end(nonce_end),
+		.target(target),
+		.hashing(hashing),
 		.new_result(new_result),
 		.result_data(result_data)
-	);
-
-	wire [159:0] block;
-	wire [511:0] state;
-	wire [31:0] hash;
-	
-	whirlpool whirlpool(
-		.clk(clk),
-		.state(state),
-		.hash(hash)
 	);
 
 endmodule
